@@ -20,6 +20,9 @@ h3{
   border-bottom: 1px dashed #ccc;
   color: darkslategrey;
 }
+h2{
+  margin-bottom: 20px;
+}
 
 .btn{
   color: white;

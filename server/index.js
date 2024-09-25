@@ -11,7 +11,7 @@ const port=8000;
 app.use(
     cors({
         origin:"http://localhost:5173",
-        methods:["GET","POST","PUT","DELETE"],
+        methods:["GET","POST","PATCH","DELETE"],
     })
 );
 
@@ -27,7 +27,6 @@ app.delete("/users/:id",(req,res)=>{
     fs.writeFile("./sample.json",JSON.stringify(filteredUsers),(err,data)=>{
        return res.json(filteredUsers);
     })
-
 })
 
 //ADD new user details.
@@ -41,9 +40,25 @@ app.post("/users",(req,res)=>{
 
     fs.writeFile("./sample.json",JSON.stringify(users),(err,data)=>{
         return res.json({"message":"User detail added sucessfully"});
-     })
- 
+     })   
+});
+
+//UPDATE user details.
+app.patch("/users/:id",(req,res)=>{
+
+    let id=Number(req.params.id);
+    let {name,age,city}=req.body;
+    if(!name || !age || !city){
+        res.status(400).send({"message":"All Fields Required"});
+    }
     
+    let index=users.findIndex((user)=>user.id==id);
+
+    users.splice(index,1,{...req.body});
+
+    fs.writeFile("./sample.json",JSON.stringify(users),(err,data)=>{
+        return res.json({"message":"User details updated sucessfully"});
+     })   
 });
 
 app.listen(port,(err)=>{

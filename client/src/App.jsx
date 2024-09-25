@@ -66,10 +66,28 @@ function App() {
  const handleSubmit=async(e)=>{
   e.preventDefault();
 
-  await axios.post("http://localhost:8000/users",userData).then((res)=>{
-    console.log(res.data);
-    
-  })
+  if(userData.id){
+    await axios.patch(`http://localhost:8000/users/${userData.id}`,userData).then((res)=>{
+      console.log(res.data); 
+    })
+  }else{
+    await axios.post("http://localhost:8000/users",userData).then((res)=>{
+      console.log(res.data); 
+    })
+  }
+  closeModal();
+  setUserData({name:"",
+    age:"",
+    city:""
+  });
+  
+ }
+
+ //Update user function
+ const handleUpdateRecord=(user)=>{
+  setUserData(user);
+  setIsModelOpen(true);
+
  }
 
   return (
@@ -101,7 +119,7 @@ function App() {
                     <td>{user.age}</td>
                     <td>{user.city}</td>
                     <td>
-                      <button className='btn green'>Edit</button>
+                      <button className='btn green' onClick={()=>handleUpdateRecord(user)}>Edit</button>
                     </td>
                     <td>
                       <button className='btn red' onClick={()=>handleDelete(user.id)}>Delete</button>
@@ -117,7 +135,7 @@ function App() {
           <div className="modal">
             <div className="modal-content">
               <span className='close' onClick={closeModal}>&times;</span>
-              <h2>User Record</h2>
+              <h2>{userData.id?"Update Record":"Add Record"}</h2>
               <div className="input-group">
                 <label htmlFor="name">Full Name</label>
                 <input type="text" name="name" id="name" value={userData.name} onChange={handleData}/>
@@ -130,7 +148,7 @@ function App() {
                 <label htmlFor="city">City</label>
                 <input type="text" name="city" id="city" value={userData.city} onChange={handleData}/>
               </div>
-              <button className='btn green' onClick={handleSubmit}>Add User</button>
+              <button className='btn green' onClick={handleSubmit}>{userData.id?"Update User":"Add User"}</button>
             </div>
           </div>
         )}
