@@ -4,6 +4,8 @@ const users=require("./sample.json");
 const fs=require("fs");
 
 const app=express();
+app.use(express.json());
+
 const port=8000;
 
 app.use(
@@ -27,6 +29,22 @@ app.delete("/users/:id",(req,res)=>{
     })
 
 })
+
+//ADD new user details.
+app.post("/users",(req,res)=>{
+    let {name,age,city}=req.body;
+    if(!name || !age || !city){
+        res.status(400).send({"message":"All Fields Required"});
+    }
+    let id=Date.now();
+    users.push({id,name,age,city});
+
+    fs.writeFile("./sample.json",JSON.stringify(users),(err,data)=>{
+        return res.json({"message":"User detail added sucessfully"});
+     })
+ 
+    
+});
 
 app.listen(port,(err)=>{
     console.log(`App is running in port ${port}`);

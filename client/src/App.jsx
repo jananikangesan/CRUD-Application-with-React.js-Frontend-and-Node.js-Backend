@@ -5,6 +5,13 @@ import axios from "axios";
 function App() {
  const [user,setUser]=useState([]);
  const [filterUser,setFilterUser]=useState([]);
+ const [isModalOpen,setIsModelOpen]=useState(false);
+ const [userData,setUserData]=useState(
+  {name:"",
+    age:"",
+    city:""
+  }
+  );
 
  //display users
  const getAllUser=async()=>{
@@ -37,7 +44,32 @@ function App() {
       setFilterUser(res.data);
     })
   }
- 
+ }
+//Add user Details
+ const handleAddRecord=()=>{
+  setUserData({name:"",
+    age:"",
+    city:""
+  });
+  setIsModelOpen(true);
+ }
+ //close Modal
+ const closeModal=()=>{
+  setIsModelOpen(false);
+  getAllUser();
+ }
+
+ const handleData=(e)=>{
+  setUserData({...userData,[e.target.name]:e.target.value})
+ }
+
+ const handleSubmit=async(e)=>{
+  e.preventDefault();
+
+  await axios.post("http://localhost:8000/users",userData).then((res)=>{
+    console.log(res.data);
+    
+  })
  }
 
   return (
@@ -46,7 +78,7 @@ function App() {
         <h3>CRUD Application with React.js Frontend and Node.js Backend</h3>
         <div className="input-search">
           <input type="search" placeholder='Search Text Here' onChange={handleSearchChange}/>
-          <button className='btn green'>Add Record</button>
+          <button className='btn green' onClick={handleAddRecord}>Add Record</button>
         </div>
         <table className="table">
           <thead>
@@ -64,7 +96,7 @@ function App() {
               filterUser && filterUser.map((user,index)=>{
                 return (
                   <tr key={index}>
-                    <td>{user.id}</td>
+                    <td>{index+1}</td>
                     <td>{user.name}</td>
                     <td>{user.age}</td>
                     <td>{user.city}</td>
@@ -81,7 +113,29 @@ function App() {
            
           </tbody>      
         </table>
+        {isModalOpen &&(
+          <div className="modal">
+            <div className="modal-content">
+              <span className='close' onClick={closeModal}>&times;</span>
+              <h2>User Record</h2>
+              <div className="input-group">
+                <label htmlFor="name">Full Name</label>
+                <input type="text" name="name" id="name" value={userData.name} onChange={handleData}/>
+              </div>
+              <div className="input-group">
+                <label htmlFor="age">Age</label>
+                <input type="text" name="age" id="age" value={userData.age} onChange={handleData} />
+              </div>
+              <div className="input-group">
+                <label htmlFor="city">City</label>
+                <input type="text" name="city" id="city" value={userData.city} onChange={handleData}/>
+              </div>
+              <button className='btn green' onClick={handleSubmit}>Add User</button>
+            </div>
+          </div>
+        )}
       </div>
+
     </>
   )
 }
